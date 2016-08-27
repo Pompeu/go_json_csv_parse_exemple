@@ -42,3 +42,15 @@ func TestGetUrlToCsv(t *testing.T) {
 	assert.NotNil(t, person, "person é invalid")
 
 }
+func TestParseCsv(t *testing.T) {
+	csv := `name,email,sexo,idade
+Pompeu,pompeulimp@gmail.com,M,33`
+
+	persons, err := CsvToObject(csv)
+	assert.Nil(t, err)
+	person := persons[0]
+	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
+	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Idade, "33", "idade invalide")
+	assert.Equal(t, person.Sexo, "M", "sexo invalido")
+}
