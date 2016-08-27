@@ -47,3 +47,23 @@ func TestIsJson(t *testing.T) {
 		t.Error("não é um json invalido")
 	}
 }
+
+func TestInvalidJson(t *testing.T) {
+	isInvalid := IsJson(`{"email": "password", "jose"}`)
+	if isInvalid {
+		t.Error("esse json é valido")
+	}
+}
+
+func TestGetUrlToCsv(t *testing.T) {
+	person, err := GetUrl("http://localhost:3000/csv")
+
+	if err != nil {
+		t.Error("não é possivel pega o csv")
+	}
+
+	if person == nil {
+		t.Error("person é invalid")
+	}
+
+}
