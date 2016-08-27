@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/gocarina/gocsv"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 )
@@ -38,9 +37,7 @@ func IsJson(strJson string) bool {
 }
 
 func CsvToObject(csvStr string) ([]*Person, error) {
-	log.Println(csvStr)
 	persons := []*Person{}
 	err := gocsv.UnmarshalString(csvStr, &persons)
 	return persons, err
-
 }
