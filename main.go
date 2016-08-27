@@ -22,8 +22,15 @@ func GetUrl(url string) (*Person, error) {
 		res, err := http.Get(url)
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
-		err = json.Unmarshal(body, &person)
+		if IsJson(string(body)) {
+			err = json.Unmarshal(body, &person)
+		}
 		return person, err
 	}
 	return nil, errors.New("invalid url")
+}
+
+func IsJson(strJson string) bool {
+	var sampleJson map[string]string
+	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
 }

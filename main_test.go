@@ -40,3 +40,10 @@ func TestGetUrlFromServer(t *testing.T) {
 		t.Error("sexo invalido")
 	}
 }
+
+func TestIsJson(t *testing.T) {
+	isJson := IsJson(`{"name":"pompeu"}`)
+	if !isJson {
+		t.Error("não é um json invalido")
+	}
+}
