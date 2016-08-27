@@ -38,19 +38,10 @@ func TestInvalidJson(t *testing.T) {
 
 func TestGetUrlToCsv(t *testing.T) {
 	person, err := GetUrl("http://localhost:3000/csv")
-	assert.Nil(t, err, "não é possivel pega o csv")
-	assert.NotNil(t, person, "person é invalid")
-
-}
-func TestParseCsv(t *testing.T) {
-	csv := `name,email,sexo,idade
-Pompeu,pompeulimp@gmail.com,M,33`
-
-	persons, err := CsvToObject(csv)
-	assert.Nil(t, err)
-	person := persons[0]
+	assert.Nil(t, err, "não é possivel pegar o csv")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
 	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
+
 }

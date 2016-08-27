@@ -25,7 +25,12 @@ func GetUrl(url string) (*Person, error) {
 		body, err := ioutil.ReadAll(res.Body)
 		if IsJson(string(body)) {
 			err = json.Unmarshal(body, &person)
+		} else if res.Header.Get("ContentType") == "text/csv" {
+			var persons = []*Person{}
+			err = gocsv.UnmarshalBytes(body, &persons)
+			person = persons[0]
 		}
+
 		return person, err
 	}
 	return nil, errors.New("invalid url")
