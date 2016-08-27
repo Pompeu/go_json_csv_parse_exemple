@@ -3,16 +3,18 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gocarina/gocsv"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 )
 
 type Person struct {
-	Name  string `name:json`
-	Email string `email:json`
-	Sexo  string `sexo:json`
-	Idade string `idade:json`
+	Name  string `csv:"name"`
+	Email string `csv:"email"`
+	Sexo  string `csv:"sexo"`
+	Idade string `csv:"idade"`
 }
 
 func GetUrl(url string) (*Person, error) {
@@ -33,4 +35,12 @@ func GetUrl(url string) (*Person, error) {
 func IsJson(strJson string) bool {
 	var sampleJson map[string]string
 	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
+}
+
+func CsvToObject(csvStr string) ([]*Person, error) {
+	log.Println(csvStr)
+	persons := []*Person{}
+	err := gocsv.UnmarshalString(csvStr, &persons)
+	return persons, err
+
 }
