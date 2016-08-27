@@ -21,11 +21,12 @@ func GetUrl(url string) (*Person, error) {
 	person := &Person{}
 	if valid {
 		res, err := http.Get(url)
+		content := res.Header.Get("ContentType")
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
-		if IsJson(string(body)) {
+		if IsJson(string(body)) && content == "application/json" {
 			err = json.Unmarshal(body, &person)
-		} else if res.Header.Get("ContentType") == "text/csv" {
+		} else if content == "text/csv" {
 			var persons = []*Person{}
 			err = gocsv.UnmarshalBytes(body, &persons)
 			person = persons[0]
@@ -39,10 +40,4 @@ func GetUrl(url string) (*Person, error) {
 func IsJson(strJson string) bool {
 	var sampleJson map[string]string
 	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
-}
-
-func CsvToObject(csvStr string) ([]*Person, error) {
-	persons := []*Person{}
-	err := gocsv.UnmarshalString(csvStr, &persons)
-	return persons, err
 }
