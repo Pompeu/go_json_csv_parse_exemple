@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"net/http"
 	"regexp"
 )
 
@@ -16,7 +19,11 @@ func GetUrl(url string) (*Person, error) {
 	valid, _ := regexp.MatchString("^(http|https)://[a-z.:0-9]+", url)
 	person := &Person{}
 	if valid {
-		return person, nil
+		res, err := http.Get(url)
+		defer res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
+		err = json.Unmarshal(body, &person)
+		return person, err
 	}
 	return nil, errors.New("invalid url")
 }
