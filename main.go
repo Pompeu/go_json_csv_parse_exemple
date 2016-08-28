@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"github.com/gocarina/gocsv"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 type Person struct {
@@ -41,4 +44,34 @@ func GetUrl(url string) (*Person, error) {
 func IsJson(strJson string) bool {
 	var sampleJson map[string]interface{}
 	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
+}
+
+func CsvToPersons(strCsv string) []Person {
+	r := csv.NewReader(strings.NewReader(strCsv))
+	var keys []string
+	var persons []Person
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if record[0] == "name" {
+			for _, v := range record {
+				keys = append(keys, v)
+			}
+		} else {
+			person := new(Person)
+			person.Name = record[0]
+			person.Email = record[1]
+			person.Sexo = record[2]
+			person.Idade = record[3]
+			internalMap := make(map[string]interface{})
+			for i, v := range keys[4:] {
+				internalMap[v] = record[i+4]
+			}
+			person.Outros = internalMap
+			persons = append(persons, *person)
+		}
+	}
+	return persons
 }
