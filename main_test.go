@@ -17,13 +17,24 @@ func TestGetUrlDontAcceptInvaidUrl(t *testing.T) {
 }
 
 func TestGetUrlFromServer(t *testing.T) {
-	person, err := GetUrl("http://localhost:3000")
+	person, err := GetUrl("http://localhost:3000/json")
 
 	assert.Nil(t, err, "url pattern is wrong")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
 	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
+}
+
+func TestGetUrlJsonDynamic(t *testing.T) {
+	person, err := GetUrl("http://localhost:3000/json/mult")
+	assert.Nil(t, err, "url pattern is wrong")
+	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
+	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Idade, "33", "idade invalide")
+	assert.Equal(t, person.Sexo, "M", "sexo invalido")
+	assert.Equal(t, person.Outros["childrens"], "1")
+	assert.Equal(t, person.Outros["mother_name"], "Joana")
 }
 
 func TestIsJson(t *testing.T) {
@@ -43,5 +54,4 @@ func TestGetUrlToCsv(t *testing.T) {
 	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
-
 }

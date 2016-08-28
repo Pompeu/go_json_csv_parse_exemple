@@ -10,10 +10,11 @@ import (
 )
 
 type Person struct {
-	Name  string `csv:"name"`
-	Email string `csv:"email"`
-	Sexo  string `csv:"sexo"`
-	Idade string `csv:"idade"`
+	Name   string `csv:"name"`
+	Email  string `csv:"email"`
+	Sexo   string `csv:"sexo"`
+	Idade  string `csv:"idade"`
+	Outros map[string]interface{}
 }
 
 func GetUrl(url string) (*Person, error) {
@@ -38,6 +39,6 @@ func GetUrl(url string) (*Person, error) {
 }
 
 func IsJson(strJson string) bool {
-	var sampleJson map[string]string
+	var sampleJson map[string]interface{}
 	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
 }
