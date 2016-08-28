@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"errors"
-	"github.com/gocarina/gocsv"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -31,9 +30,8 @@ func GetUrl(url string) (*Person, error) {
 		if IsJson(string(body)) && content == "application/json" {
 			err = json.Unmarshal(body, &person)
 		} else if content == "text/csv" {
-			var persons = []*Person{}
-			err = gocsv.UnmarshalBytes(body, &persons)
-			person = persons[0]
+			persons := CsvToPersons(string(body))
+			person = &persons[0]
 		}
 
 		return person, err
