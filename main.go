@@ -21,17 +21,16 @@ type Person struct {
 
 func GetUrl(url string) (*Person, error) {
 	valid, _ := regexp.MatchString("^(http|https)://[a-z.:0-9]+", url)
-	person := &Person{}
 	if valid {
 		res, err := http.Get(url)
 		content := res.Header.Get("ContentType")
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
+		person := &Person{}
 		if IsJson(string(body)) && content == "application/json" {
 			err = json.Unmarshal(body, &person)
 		} else if content == "text/csv" {
-			persons := CsvToPersons(string(body))
-			person = &persons[0]
+			person = CsvToPerson(string(body))
 		}
 
 		return person, err
@@ -44,10 +43,10 @@ func IsJson(strJson string) bool {
 	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
 }
 
-func CsvToPersons(strCsv string) []Person {
+func CsvToPerson(strCsv string) *Person {
 	r := csv.NewReader(strings.NewReader(strCsv))
 	var keys []string
-	var persons []Person
+	person := new(Person)
 	for {
 		record, err := r.Read()
 		if err == io.EOF {
@@ -58,7 +57,6 @@ func CsvToPersons(strCsv string) []Person {
 				keys = append(keys, v)
 			}
 		} else {
-			person := new(Person)
 			person.Name = record[0]
 			person.Email = record[1]
 			person.Sexo = record[2]
@@ -68,8 +66,7 @@ func CsvToPersons(strCsv string) []Person {
 				internalMap[v] = record[i+4]
 			}
 			person.Outros = internalMap
-			persons = append(persons, *person)
 		}
 	}
-	return persons
+	return person
 }
