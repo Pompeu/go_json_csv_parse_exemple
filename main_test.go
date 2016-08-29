@@ -11,70 +11,77 @@ func TestPersonDefined(t *testing.T) {
 }
 
 func TestGetUrlDontAcceptInvaidUrl(t *testing.T) {
-	_, err := GetUrl("")
+	_, err := new(Person).GetUrl("")
 	assert.Error(t, err)
 }
 
 func TestGetUrlFromServer(t *testing.T) {
-	person, err := GetUrl("http://localhost:3000/json")
+	person, err := new(Person).GetUrl("http://localhost:3000/json")
 
 	assert.Nil(t, err, "url pattern is wrong")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
-	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Nome, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
 }
 
 func TestGetUrlJsonDynamic(t *testing.T) {
-	person, err := GetUrl("http://localhost:3000/json/mult")
+	person, err := new(Person).GetUrl("http://localhost:3000/json/mult")
 	assert.Nil(t, err, "url pattern is wrong")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
-	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Nome, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
-	assert.Equal(t, person.Outros["childrens"], "1")
-	assert.Equal(t, person.Outros["mother_name"], "Joana")
+	assert.Equal(t, person.Outros["filhos"], "1")
+	assert.Equal(t, person.Outros["mae"], "Joana")
 }
 
 func TestGetUrlToCsv(t *testing.T) {
-	person, err := GetUrl("http://localhost:3000/csv")
+	person, err := new(Person).GetUrl("http://localhost:3000/csv")
 	assert.Nil(t, err, "não é possivel pegar o csv")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
-	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Nome, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
 }
 
 func TestGetUrlCsvDynamic(t *testing.T) {
-	person, err := GetUrl("http://localhost:3000/csv/mult")
+	person, err := new(Person).GetUrl("http://localhost:3000/csv/mult")
 	assert.Nil(t, err, "url pattern is wrong")
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
-	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Nome, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
-	assert.Equal(t, person.Outros["childrens"], "1")
-	assert.Equal(t, person.Outros["mother_name"], "Joana")
+	assert.Equal(t, person.Outros["filhos"], "1")
+	assert.Equal(t, person.Outros["mae"], "Joana")
 }
 
-func TestCsvToPerson(t *testing.T) {
-	in := `name,email,sexo,idade,childrens,mother_name
+func TestCsvUnmarshal(t *testing.T) {
+	in := `name,email,sexo,idade,filhos,mae
 Pompeu,pompeulimp@gmail.com,M,33,1,Joana`
 
-	person, err := CsvToPerson(in)
+	person := new(Person)
+	err := person.CsvUnmarshal(in)
 	assert.Nil(t, err)
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
-	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
+	assert.Equal(t, person.Nome, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
-	assert.Equal(t, person.Outros["childrens"], "1")
-	assert.Equal(t, person.Outros["mother_name"], "Joana")
+	assert.Equal(t, person.Outros["filhos"], "1")
+	assert.Equal(t, person.Outros["mae"], "Joana")
 }
 
-func TestCsvToPersonInvalid(t *testing.T) {
-	in := `name,email,sexo,idade,childrens,mother_name
+func TestCsvUnmarshalInvalid(t *testing.T) {
+	in := `name,email,sexo,idade,filhos,mae
 Pompeu,pompeulimp@gmail.com,M,33,1,Joana,invalid`
 
-	person, err := CsvToPerson(in)
+	person := new(Person)
+	err := person.CsvUnmarshal(in)
+
 	assert.NotNil(t, err)
-	assert.Nil(t, person)
+	assert.Empty(t, person.Nome)
+	assert.Empty(t, person.Email)
+	assert.Empty(t, person.Idade)
+	assert.Empty(t, person.Sexo)
+	assert.Empty(t, person.Outros)
 }
