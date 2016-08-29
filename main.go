@@ -3,11 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
-	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"strings"
 )
 
@@ -20,53 +17,40 @@ type Person struct {
 }
 
 func GetUrl(url string) (*Person, error) {
-	valid, _ := regexp.MatchString("^(http|https)://[a-z.:0-9]+", url)
-	if valid {
-		res, err := http.Get(url)
+	if res, err := http.Get(url); err == nil {
 		content := res.Header.Get("ContentType")
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 		person := &Person{}
-		if IsJson(string(body)) && content == "application/json" {
+		if content == "application/json" {
 			err = json.Unmarshal(body, &person)
 		} else if content == "text/csv" {
 			person = CsvToPerson(string(body))
 		}
-
 		return person, err
-	}
-	return nil, errors.New("invalid url")
-}
+	} else {
 
-func IsJson(strJson string) bool {
-	var sampleJson map[string]interface{}
-	return json.Unmarshal([]byte(strJson), &sampleJson) == nil
+		return nil, err
+	}
 }
 
 func CsvToPerson(strCsv string) *Person {
 	r := csv.NewReader(strings.NewReader(strCsv))
-	var keys []string
 	person := new(Person)
-	for {
-		record, err := r.Read()
-		if err == io.EOF {
-			break
+	records, _ := r.ReadAll()
+
+	keys := records[0]
+	for _, record := range records[1:] {
+		person.Name = record[0]
+		person.Email = record[1]
+		person.Sexo = record[2]
+		person.Idade = record[3]
+		internalMap := make(map[string]interface{})
+		for i, v := range keys[4:] {
+			internalMap[v] = record[i+4]
 		}
-		if record[0] == "name" {
-			for _, v := range record {
-				keys = append(keys, v)
-			}
-		} else {
-			person.Name = record[0]
-			person.Email = record[1]
-			person.Sexo = record[2]
-			person.Idade = record[3]
-			internalMap := make(map[string]interface{})
-			for i, v := range keys[4:] {
-				internalMap[v] = record[i+4]
-			}
-			person.Outros = internalMap
-		}
+		person.Outros = internalMap
+
 	}
 	return person
 }

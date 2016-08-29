@@ -12,8 +12,7 @@ func TestPersonDefined(t *testing.T) {
 
 func TestGetUrlDontAcceptInvaidUrl(t *testing.T) {
 	_, err := GetUrl("")
-	assert.Error(t, err, "url pattern is wrong")
-	assert.Equal(t, err.Error(), "invalid url", "url pattern is wrong")
+	assert.Error(t, err)
 }
 
 func TestGetUrlFromServer(t *testing.T) {
@@ -35,16 +34,6 @@ func TestGetUrlJsonDynamic(t *testing.T) {
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
 	assert.Equal(t, person.Outros["childrens"], "1")
 	assert.Equal(t, person.Outros["mother_name"], "Joana")
-}
-
-func TestIsJson(t *testing.T) {
-	isJson := IsJson(`{"name":"pompeu"}`)
-	assert.True(t, isJson, "não é um json invalido")
-}
-
-func TestInvalidJson(t *testing.T) {
-	isInvalid := IsJson(`{"email": "password", "jose"}`)
-	assert.False(t, isInvalid, "esse json é valido")
 }
 
 func TestGetUrlToCsv(t *testing.T) {
