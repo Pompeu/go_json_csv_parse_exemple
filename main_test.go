@@ -60,11 +60,21 @@ func TestCsvToPerson(t *testing.T) {
 	in := `name,email,sexo,idade,childrens,mother_name
 Pompeu,pompeulimp@gmail.com,M,33,1,Joana`
 
-	person := CsvToPerson(in)
+	person, err := CsvToPerson(in)
+	assert.Nil(t, err)
 	assert.Equal(t, person.Email, "pompeulimp@gmail.com", "email invalido")
 	assert.Equal(t, person.Name, "Pompeu", "nome invalido")
 	assert.Equal(t, person.Idade, "33", "idade invalide")
 	assert.Equal(t, person.Sexo, "M", "sexo invalido")
 	assert.Equal(t, person.Outros["childrens"], "1")
 	assert.Equal(t, person.Outros["mother_name"], "Joana")
+}
+
+func TestCsvToPersonInvalid(t *testing.T) {
+	in := `name,email,sexo,idade,childrens,mother_name
+Pompeu,pompeulimp@gmail.com,M,33,1,Joana,invalid`
+
+	person, err := CsvToPerson(in)
+	assert.NotNil(t, err)
+	assert.Nil(t, person)
 }

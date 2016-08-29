@@ -25,7 +25,7 @@ func GetUrl(url string) (*Person, error) {
 		if content == "application/json" {
 			err = json.Unmarshal(body, &person)
 		} else if content == "text/csv" {
-			person = CsvToPerson(string(body))
+			person, err = CsvToPerson(string(body))
 		}
 		return person, err
 	} else {
@@ -34,11 +34,13 @@ func GetUrl(url string) (*Person, error) {
 	}
 }
 
-func CsvToPerson(strCsv string) *Person {
+func CsvToPerson(strCsv string) (*Person, error) {
 	r := csv.NewReader(strings.NewReader(strCsv))
 	person := new(Person)
-	records, _ := r.ReadAll()
-
+	records, err := r.ReadAll()
+	if err != nil {
+		return nil, err
+	}
 	keys := records[0]
 	for _, record := range records[1:] {
 		person.Name = record[0]
@@ -52,5 +54,5 @@ func CsvToPerson(strCsv string) *Person {
 		person.Outros = internalMap
 
 	}
-	return person
+	return person, nil
 }
